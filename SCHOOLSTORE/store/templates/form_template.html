@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>User Profile Form</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    {% for message in messages %}
+    <div class="alert alert-success">
+        <strong>{{message}}</strong>
+        <br>
+        Thank you for your order!
+        <br><br>
+        <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
+    </div>
+    {% endfor %}
+    
+</body>
+
+<script>
+    $(document).ready(function() {
+        var departmentSelect = $('#department-selector');
+        var courseSelect = $('#course-selector');
+
+        function updateCourseOptions() {
+            var selectedDepartment = departmentSelect.val();
+            $.ajax({
+                url: '/get_courses/',  // URL to the view function
+                data: {
+                    'department_id': selectedDepartment
+                },
+                dataType: 'json',
+                success: function(data) {
+                    courseSelect.empty();
+                    $.each(data.courses, function(index, course) {
+                        courseSelect.append($('<option>', {
+                            value: course.id,
+                            text: course.name
+                        }));
+                    });
+                }
+            });
+        }
+
+        departmentSelect.on('change', updateCourseOptions);
+        updateCourseOptions();  // Initialize course options
+    });
+    </script>
+
+</html>
